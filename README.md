@@ -1,2 +1,2 @@
-# enterprise-architecture-study
-A repository to consolidate projects to study Enterprise Architecture topics
+# Projects to Study
+A repository to consolidate projects to study many topics 
