@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>dotnet-Consumer-a7402908-9693-430b-b7c6-0caf6fcf0579</UserSecretsId>
+    <UserSecretsId>dotnet-ConsumerApp-b96f83ca-4e80-4046-a041-e579ed8e1780</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
