@@ -1,4 +1,4 @@
-namespace ConsumerApp;
+namespace Validator;
 
 public class Worker : BackgroundService
 {

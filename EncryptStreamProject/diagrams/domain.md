@@ -8,6 +8,7 @@ classDiagram
         string Id
         string TextEncrypted
         HashCryptor HashCryptor
+        string Key
         datetime createdAt
     }
 

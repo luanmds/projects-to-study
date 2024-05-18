@@ -1,4 +1,4 @@
-using ConsumerApp;
+using Validator;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddHostedService<Worker>();

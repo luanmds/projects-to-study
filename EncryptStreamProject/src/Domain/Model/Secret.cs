@@ -4,7 +4,7 @@ namespace Domain.Model;
 
 public class Secret : AggregateRoot<Secret>
 {
-    public string TextEncripted { get; init; }
-    public HashCryptor HashCryptor { get; init; }
+    public required string TextEncrypted { get; set; }
+    public required HashCryptor HashCryptor { get; set; }
     public DateTime CreatedAt { get; init; }
 }
