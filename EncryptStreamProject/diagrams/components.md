@@ -34,10 +34,8 @@ C4Component
     }
 
     Container_Boundary(application, "Application Layer") {
-        
         Component(mediator, "CQRS Mediator", ".Net Library", "Allows map commands/queries/events with them handlers")
 
-            
         Rel(encryptor, mediator, "Uses")
         Rel(encryptor, mediator, "Uses")
 
