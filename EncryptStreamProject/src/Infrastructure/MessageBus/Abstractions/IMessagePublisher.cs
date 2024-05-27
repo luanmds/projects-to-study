@@ -1,4 +1,4 @@
-using Domain.Events;
+using Domain.Events.Abstractions;
 
 namespace Infrastructure.MessageBus.Abstractions;
 
@@ -6,5 +6,5 @@ public interface IMessagePublisher
 {
     Task Subscribe();
 
-    Task Publish(Event @event);
+    Task Publish(IEvent @event);
 }

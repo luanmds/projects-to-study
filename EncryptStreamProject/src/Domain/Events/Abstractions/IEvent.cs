@@ -1,4 +1,4 @@
-namespace Domain.Events;
+namespace Domain.Events.Abstractions;
 
 public interface IEvent
 {

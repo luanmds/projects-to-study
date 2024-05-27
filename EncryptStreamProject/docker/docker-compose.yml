@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  kafka:
+    extends:
+      file: ../../.docker/docker-compose.kafka.yml
+      service: kafka
+  db:
+    image: postgres
+    container_name: db
+    restart: always
+    shm_size: 128mb
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRESS_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: encrypt_db
+
+networks: 
+  proxy-net:
+    name: kafka_network   

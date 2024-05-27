@@ -8,6 +8,9 @@ public class Secret : AggregateRoot<Secret>
     public required HashCryptor HashCryptor { get; set; }
     public DateTime CreatedAt { get; init; }
 
+     // Obrigatório para o EF funcionar
+    protected Secret() { }
+
     public Secret(string textEncrypted, HashCryptor hashCryptor)
     {
         Id = Guid.NewGuid().ToString();
