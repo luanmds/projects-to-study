@@ -1,6 +1,6 @@
 namespace Domain.Model.Abstractions;
 
-public abstract class AggregateRoot<T>
+public abstract class AggregateRoot<T>(string id)
 {
-    public required string Id { get; init; }
+    public string Id { get; init; } = id;
 }

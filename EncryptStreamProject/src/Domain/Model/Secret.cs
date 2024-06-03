@@ -4,18 +4,17 @@ namespace Domain.Model;
 
 public class Secret : AggregateRoot<Secret>
 {
-    public required string TextEncrypted { get; set; }
-    public required HashCryptor HashCryptor { get; set; }
+    public string TextEncrypted { get; set; }
+    public HashCryptor HashCryptor { get; set; }
     public DateTime CreatedAt { get; init; }
+    public EncryptStatus Status { get; set; }
 
-     // Obrigatório para o EF funcionar
-    protected Secret() { }
+    protected Secret(string Id): base(Id) { }
 
-    public Secret(string textEncrypted, HashCryptor hashCryptor)
+    public Secret(string textEncrypted, HashCryptor hashCryptor) : base(Guid.NewGuid().ToString())
     {
-        Id = Guid.NewGuid().ToString();
         TextEncrypted = textEncrypted;
         HashCryptor = hashCryptor;
-        CreatedAt = DateTime.UtcNow;
+        CreatedAt = DateTime.UtcNow;        
     }
 }

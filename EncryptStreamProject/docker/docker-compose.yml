@@ -5,6 +5,26 @@ services:
     extends:
       file: ../../.docker/docker-compose.kafka.yml
       service: kafka
+
+  init-kafka:
+    image: confluentinc/cp-kafka:6.1.1
+    container_name: init-kafka
+    depends_on:
+      - kafka
+    networks: 
+      - proxy-net 
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      kafka-topics --bootstrap-server kafka:9092 --list
+      echo -e 'Creating kafka topics'
+      
+      kafka-topics --create --topic encryptor-notifications --partitions 1 --replication-factor 1 --bootstrap-server kafka:9092
+      kafka-topics --create --topic encryptor-events --partitions 1 --replication-factor 1 --bootstrap-server kafka:9092
+
+      echo -e 'Successfully created the following topics:'
+      kafka-topics --bootstrap-server kafka:9092 --list
+      "
   db:
     image: postgres
     container_name: db

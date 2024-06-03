@@ -1,6 +1,8 @@
+using Application.Cqrs;
+using Infrastructure.Configuration;
+using Infrastructure.MessageBus.Abstractions;
 using Infrastructure.Settings;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using WebApi;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,13 +13,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Configure Infrastructure and Application
-var Configuration = builder.Configuration;
-builder.Services.AddDbContext<SecretDbContext>(options =>
-        options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
-
 var appSettings = new ApplicationSettings();
 var appSettingsSection = builder.Configuration.GetSection("ApplicationSettings");
 appSettingsSection.Bind(appSettings);
+
+builder.AddDatabaseContext();
+builder.Services.ConfigureDomainServices();
+builder.AddMessageBus();    
 
 var app = builder.Build();
 
@@ -28,7 +30,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
 if(appSettings.UseMigration)
 {
     // Migrate tables
@@ -37,13 +38,13 @@ if(appSettings.UseMigration)
     db.Database.Migrate();
 }
 
-
-
 app.UseHttpsRedirection();
 
-app.MapGet("", (SecretDbContext context) => {
-
-    return context.Secrets.Include(x => x.HashCryptor).First();
+app.MapGet("", async (IMessagePublisher publisher) => {
+    await publisher.Publish(new CreateSecret(
+        Guid.NewGuid().ToString(),
+        Guid.NewGuid().ToString(),
+        "secret example"));
 });
 
 

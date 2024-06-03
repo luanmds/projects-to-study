@@ -33,6 +33,10 @@ namespace Infrastructure.Migrations
                     b.Property<string>("TextEncrypted")
                         .IsRequired()
                         .HasColumnType("text");
+                    
+                    b.Property<string>("EncryptStatus")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

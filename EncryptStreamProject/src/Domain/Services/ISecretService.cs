@@ -6,5 +6,5 @@ public interface ISecretService
 {
     protected Task<string> EncryptSecret(string text, HashCryptor hashCryptor);
 
-    public Task CreateSecret(string text, string hashValue, HashType hashType);
+    public Task EncryptAndPersistSecret(string text, string hashValue, HashType hashType);
 }
