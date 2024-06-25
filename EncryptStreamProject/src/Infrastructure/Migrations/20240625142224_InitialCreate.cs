@@ -17,38 +17,20 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     TextEncrypted = table.Column<string>(type: "text", nullable: false),
+                    HashCryptor_HashValue = table.Column<string>(type: "text", nullable: false),
+                    HashCryptor_HashType = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    EncryptStatus = table.Column<string>(type: "text", nullable: false)
+                    EncryptStatus = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Secrets", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "HashCryptors",
-                columns: table => new
-                {
-                    SecretId = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_HashCryptors", x => x.SecretId);
-                    table.ForeignKey(
-                        name: "FK_HashCryptors_Secrets_SecretId",
-                        column: x => x.SecretId,
-                        principalTable: "Secrets",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "HashCryptors");
-
             migrationBuilder.DropTable(
                 name: "Secrets");
         }

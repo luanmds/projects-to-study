@@ -4,12 +4,6 @@ namespace Domain.Model;
 
 public class HashCryptor : ValueObject<HashCryptor>
 {
-    string HashValue { get; init; }
-    HashType HashType { get; init; }
-
-    public HashCryptor(string hashValue, HashType hashType)
-    {
-        HashValue = hashValue;
-        HashType = hashType;
-    }
+    public string HashValue { get; init; }
+    public HashType HashType { get; init; }
 }

@@ -1,9 +1,16 @@
-using Application.Cqrs;
+using Application.Cqrs.Commands;
+using Application.Publishers;
 using Infrastructure.Configuration;
-using Infrastructure.MessageBus.Abstractions;
 using Infrastructure.Settings;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using WebApi;
+
+// Config Logs
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,13 +20,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Configure Infrastructure and Application
+builder.Services.AddOptions();
 var appSettings = new ApplicationSettings();
 var appSettingsSection = builder.Configuration.GetSection("ApplicationSettings");
 appSettingsSection.Bind(appSettings);
 
-builder.AddDatabaseContext();
+builder.Services.AddDatabase(builder.Configuration);
 builder.Services.ConfigureDomainServices();
-builder.AddMessageBus();    
+builder.Services.AddMessageBus(builder.Configuration);    
 
 var app = builder.Build();
 
@@ -35,17 +43,18 @@ if(appSettings.UseMigration)
     // Migrate tables
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<SecretDbContext>();
-    db.Database.Migrate();
+    await db.Database.MigrateAsync();
 }
 
 app.UseHttpsRedirection();
 
-app.MapGet("", async (IMessagePublisher publisher) => {
-    await publisher.Publish(new CreateSecret(
+app.MapGet("", async ([FromServices] ICommandPublisher publisher) => {
+    await publisher.Publish(
+        new CreateSecret(
         Guid.NewGuid().ToString(),
         Guid.NewGuid().ToString(),
         "secret example"));
 });
 
-
-app.Run();
+Log.Information("API Running");
+await app.RunAsync();

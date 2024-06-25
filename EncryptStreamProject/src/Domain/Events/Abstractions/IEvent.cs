@@ -1,8 +1,6 @@
-using MediatR;
+namespace Domain.Events.Abstractions;
 
-namespace Application.Events.Abstractions;
-
-public interface IEvent : IRequest
+public interface IEvent
 {
     public string Id { get; init; }
     public string TraceKey { get; init; }

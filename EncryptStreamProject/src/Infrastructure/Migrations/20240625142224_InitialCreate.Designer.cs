@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(SecretDbContext))]
-    [Migration("20240527021039_InitialCreate")]
+    [Migration("20240625142224_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -33,11 +33,10 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("TextEncrypted")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("EncryptStatus")
+                        .HasColumnType("integer");
 
-                    b.Property<string>("EncryptStatus")
+                    b.Property<string>("TextEncrypted")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -53,9 +52,16 @@ namespace Infrastructure.Migrations
                             b1.Property<string>("SecretId")
                                 .HasColumnType("text");
 
+                            b1.Property<int>("HashType")
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("HashValue")
+                                .IsRequired()
+                                .HasColumnType("text");
+
                             b1.HasKey("SecretId");
 
-                            b1.ToTable("HashCryptors");
+                            b1.ToTable("Secrets");
 
                             b1.WithOwner()
                                 .HasForeignKey("SecretId");

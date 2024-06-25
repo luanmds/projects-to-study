@@ -30,11 +30,10 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("EncryptStatus")
+                        .HasColumnType("integer");
+
                     b.Property<string>("TextEncrypted")
-                        .IsRequired()
-                        .HasColumnType("text");
-                    
-                    b.Property<string>("EncryptStatus")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -50,9 +49,16 @@ namespace Infrastructure.Migrations
                             b1.Property<string>("SecretId")
                                 .HasColumnType("text");
 
+                            b1.Property<int>("HashType")
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("HashValue")
+                                .IsRequired()
+                                .HasColumnType("text");
+
                             b1.HasKey("SecretId");
 
-                            b1.ToTable("HashCryptors");
+                            b1.ToTable("Secrets");
 
                             b1.WithOwner()
                                 .HasForeignKey("SecretId");

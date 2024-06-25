@@ -1,14 +1,14 @@
 using System.Diagnostics.CodeAnalysis;
-using Application.Events;
+using Domain.Events;
 
 namespace Infrastructure.MessageBus;
 
 [ExcludeFromCodeCoverage]
 public class MessageBusSettings
 {
-    public string BrokerServer { get; set; }
+    public string BrokerServer { get; init; }
 
-    public long SessionTimeout { get; set; } = 6000;
+    public int SessionTimeout { get; set; } = 6000;
 
     public List<MessageBusChannel> MessageBusChannels { get; set; } = [];
 }

@@ -4,7 +4,7 @@ namespace Domain.Services;
 
 public interface ISecretService
 {
-    protected Task<string> EncryptSecret(string text, HashCryptor hashCryptor);
+    public Task<string> EncryptSecret(string text, HashCryptor hashCryptor);
 
-    public Task EncryptAndPersistSecret(string text, string hashValue, HashType hashType);
+    public Task<string> PersistSecret(string text, string hashValue, HashType hashType);
 }

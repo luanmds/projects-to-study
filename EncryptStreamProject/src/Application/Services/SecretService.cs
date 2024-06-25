@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using Domain.Model;
 using Domain.Repositories;
 using Domain.Services;
@@ -6,18 +8,35 @@ namespace Application.Services;
 
 public class SecretService(ISecretRepository secretRepository) : ISecretService
 {
-    public ISecretRepository _secretRepository = secretRepository;
-
-    public Task<string> EncryptSecret(string text, HashCryptor hashCryptor)
+    // TODO: Encrypt Secret
+    public async Task<string> EncryptSecret(string text, HashCryptor hashCryptor)
     {
-        throw new NotImplementedException();
+        string encrypted;
+        switch (hashCryptor.HashType)
+        {
+            case HashType.Sha256:
+                encrypted = await EncryptSha256(text);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(hashCryptor.HashType.ToString());
+        }
+
+        return encrypted;
     }
 
-    // TODO: Encrypt Secret
-    public async Task EncryptAndPersistSecret(string text, string hashValue, HashType hashType)
+    public async Task<string> PersistSecret(string text, string hashValue, HashType hashType)
     {
-        var secret = new Secret(text, new HashCryptor(hashValue, hashType));
+        var secret = new Secret(text, new HashCryptor { HashValue = hashValue, HashType = hashType});
 
-        await _secretRepository.SaveAsync(secret);
+        await secretRepository.SaveAsync(secret);
+
+        return secret.Id;
+    }
+    
+    private async Task<string> EncryptSha256(string text)
+    {
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(text));
+        var inputHash = await SHA256.HashDataAsync(stream);
+        return Convert.ToHexString(inputHash);
     }
 }
