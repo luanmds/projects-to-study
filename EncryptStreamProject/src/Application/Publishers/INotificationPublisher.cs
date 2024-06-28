@@ -1,4 +1,5 @@
 ﻿using Application.Events.Abstractions;
+using Application.Notifications.Abstractions;
 
 namespace Application.Publishers;
 

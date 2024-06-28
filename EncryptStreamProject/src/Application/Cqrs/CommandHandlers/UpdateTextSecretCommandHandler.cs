@@ -1,5 +1,5 @@
 ﻿using Application.Cqrs.Commands;
-using Application.Events;
+using Application.Notifications;
 using Application.Publishers;
 using Domain.Repositories;
 using MediatR;

@@ -3,7 +3,7 @@ using Domain.Events;
 using Domain.Events.Abstractions;
 using MediatR;
 
-namespace Application.Events.Abstractions;
+namespace Application.Notifications.Abstractions;
 
 [ExcludeFromCodeCoverage]
 public abstract class Notification(

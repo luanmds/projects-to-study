@@ -29,6 +29,6 @@ public class SecretEntityTypeConfiguration : IEntityTypeConfiguration<Secret>
     {
         builder.ToTable("Secrets");
         builder.HasKey(s => s.Id);
-        builder.OwnsOne(s => s.HashCryptor);
+        builder.OwnsOne(s => s.SecretEncryptData);
     }
 }

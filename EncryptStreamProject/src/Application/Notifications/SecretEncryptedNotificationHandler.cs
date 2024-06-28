@@ -1,12 +1,11 @@
-﻿using Application.Events;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.Logging;
 using INotificationPublisher = Application.Publishers.INotificationPublisher;
 
-namespace Application.EventHandlers;
+namespace Application.Notifications;
 
-public class NotifySecretEncryptedHandler(
-    ILogger<NotifySecretEncryptedHandler> logger,
+public class SecretEncryptedNotificationHandler(
+    ILogger<SecretEncryptedNotificationHandler> logger,
     INotificationPublisher notificationPublisher) 
     : INotificationHandler<SecretEncrypted>
 {

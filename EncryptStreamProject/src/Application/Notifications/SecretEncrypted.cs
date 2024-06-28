@@ -1,7 +1,7 @@
-﻿using Application.Events.Abstractions;
+﻿using Application.Notifications.Abstractions;
 using Domain.Events;
 
-namespace Application.Events;
+namespace Application.Notifications;
 
 public class SecretEncrypted(string secretId, string applicationId, string traceKey) 
     : Notification(traceKey, applicationId), ISecretEncrypted

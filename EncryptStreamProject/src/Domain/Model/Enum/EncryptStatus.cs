@@ -4,7 +4,6 @@ public enum EncryptStatus
 {
     ToEncrypt,
     Encrypted,
-    Validating,
     Valid,
     NotValid
 }

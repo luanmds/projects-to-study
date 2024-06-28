@@ -15,7 +15,7 @@ public class CreateSecretCommandHandler(
     public async Task Handle(CreateSecret request, CancellationToken cancellationToken)
     {
         var secretId = await secretService.PersistSecret(
-            request.SecretTextRaw, request.CorrelationId, HashType.Sha256);
+            request.SecretTextRaw, request.CorrelationId, EncryptType.Aes);
 
         var @event = new SecretCreated(request.CorrelationId, "Encryptor", secretId );
 

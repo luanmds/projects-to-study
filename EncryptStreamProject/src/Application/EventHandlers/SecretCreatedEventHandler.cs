@@ -19,7 +19,7 @@ public class SecretCreatedEventHandler(
     {
         var secret = await secretRepository.GetById(request.SecretId);
         
-        var textEncrypted = await secretService.EncryptSecret(secret.TextEncrypted, secret.HashCryptor);
+        var textEncrypted = await secretService.EncryptSecret(secret.TextEncrypted, secret.SecretEncryptData);
 
         var command = new UpdateTextSecret(
             Guid.NewGuid().ToString(), 

@@ -5,19 +5,18 @@ using Infrastructure.MessageBus.Model;
 using Infrastructure.MessageBus.Serializers;
 using MediatR;
 
-namespace Encryptor;
+namespace Validator;
 
-public class EncryptorWorker(
-    MessageBusSettings messageBusSettings, 
+public class ValidateSecretWorker(MessageBusSettings messageBusSettings, 
     IMessageHandler messageHandler,
     IServiceScopeFactory serviceScopeFactory,
-    ILogger<EncryptorWorker> logger) : BackgroundService
+    ILogger<ValidateSecretWorker> logger) : BackgroundService
 {
-    private const string ConsumerGroupId = "SecretEvents";
+    private const string ConsumerGroupId = "ValidateSecretNotifications";
     
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        logger.LogInformation("Start Encryptor Worker for ConsumerGroup {ConsumerGroup} ", ConsumerGroupId);
+        logger.LogInformation("Start Validate Secret Worker for ConsumerGroup {ConsumerGroup} ", ConsumerGroupId);
         
         var channel = messageBusSettings
             .MessageBusChannels

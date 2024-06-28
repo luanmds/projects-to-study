@@ -8,35 +8,66 @@ namespace Application.Services;
 
 public class SecretService(ISecretRepository secretRepository) : ISecretService
 {
-    // TODO: Encrypt Secret
-    public async Task<string> EncryptSecret(string text, HashCryptor hashCryptor)
+    public async Task<string> EncryptSecret(string text, SecretEncryptData secretEncryptData)
     {
-        string encrypted;
-        switch (hashCryptor.HashType)
+        var encrypted = secretEncryptData.EncryptType switch
         {
-            case HashType.Sha256:
-                encrypted = await EncryptSha256(text);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(hashCryptor.HashType.ToString());
-        }
+            EncryptType.Aes => await EncryptAes(text, secretEncryptData.KeyValue),
+            _ => throw new ArgumentOutOfRangeException(secretEncryptData.EncryptType.ToString())
+        };
 
         return encrypted;
     }
 
-    public async Task<string> PersistSecret(string text, string hashValue, HashType hashType)
+    // TODO: VALIDATE SECRET HERE
+    public async Task<bool> ValidateSecret(string encryptedText, SecretEncryptData secretEncryptData)
     {
-        var secret = new Secret(text, new HashCryptor { HashValue = hashValue, HashType = hashType});
+        _ = secretEncryptData.EncryptType switch
+        {
+            EncryptType.Aes => await DecryptAes(encryptedText, secretEncryptData.KeyValue),
+            _ => throw new ArgumentOutOfRangeException(secretEncryptData.EncryptType.ToString())
+        };
+
+        return true;
+    }
+
+    public async Task<string> PersistSecret(string text, string keyValue, EncryptType encryptType)
+    {
+        var secret = new Secret(text, new SecretEncryptData { KeyValue = keyValue, EncryptType = encryptType});
 
         await secretRepository.SaveAsync(secret);
 
         return secret.Id;
     }
     
-    private async Task<string> EncryptSha256(string text)
+    // TODO: ENCRYPT USING AES
+    private static async Task<string> EncryptAes(string text, string keyValue)
     {
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(text));
-        var inputHash = await SHA256.HashDataAsync(stream);
-        return Convert.ToHexString(inputHash);
+        var aes = Aes.Create();
+        aes.Key = Encoding.UTF8.GetBytes(keyValue);
+
+        using var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+        using var msEncrypt = new MemoryStream();
+        await using var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
+        await using var swEncrypt = new StreamWriter(csEncrypt);
+        
+        await swEncrypt.WriteAsync(text);
+        var encrypted = msEncrypt.ToArray();
+        return Convert.ToHexString(encrypted);
+    }
+    
+    private static async Task<string> DecryptAes(string encryptedText, string keyValue)
+    {
+        var aes = Aes.Create();
+        aes.Key = Encoding.UTF8.GetBytes(keyValue);
+        
+        using var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+        using var msDecrypt = new MemoryStream(Encoding.UTF8.GetBytes(encryptedText));
+        await using var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read);
+        using var srDecrypt = new StreamReader(csDecrypt);
+        
+        var plaintext = await srDecrypt.ReadToEndAsync();
+
+        return plaintext;
     }
 }

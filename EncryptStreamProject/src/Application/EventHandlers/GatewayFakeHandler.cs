@@ -1,4 +1,5 @@
 ﻿using Application.Events;
+using Application.Notifications;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

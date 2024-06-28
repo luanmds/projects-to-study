@@ -3,26 +3,35 @@
 ```mermaid
 classDiagram 
 
-    class Secret{
+    class Secret {
         <<aggregate>>
         string Id
         string TextEncrypted
-        HashCryptor HashCryptor
-        string Key
+        SecretEncryptData SecretEncryptData
+        EncryptStatus EncryptStatus
         datetime createdAt
     }
 
-    class HashCryptor{
+    class SecretEncryptData{
         <<value object>>
         string HashValue
-        HashType type
+        EncryptType type
     }
 
-    class HashType{
+    class EncryptType{
         <<enumeration>>
-        SHA256
+        Aes
+    }
+    
+    class EncryptStatus{
+        <<enumeration>>
+        ToEncrypt,
+        Encrypted,
+        Valid,
+        NotValid
     }
 
-    Secret "1" *-- "1" HashCryptor
-    HashCryptor "*" -- "1" HashType
+    Secret "1" *-- "1" SecretEncryptData
+    Secret "1" *-- "1" EncryptStatus
+    SecretEncryptData "*" -- "1" EncryptType
 ```
