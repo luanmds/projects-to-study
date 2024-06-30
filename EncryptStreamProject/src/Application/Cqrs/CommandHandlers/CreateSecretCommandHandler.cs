@@ -16,7 +16,7 @@ public class CreateSecretCommandHandler(
     {
         var secretId = await secretService.PersistSecret(
             request.SecretTextRaw, request.CorrelationId, EncryptType.Aes);
-
+        
         var @event = new SecretCreated(request.CorrelationId, "Encryptor", secretId );
 
         await eventPublisher.Publish(@event, cancellationToken);

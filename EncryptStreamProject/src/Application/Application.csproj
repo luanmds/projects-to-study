@@ -15,8 +15,4 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="NotificationHandler\" />
-  </ItemGroup>
-
 </Project>

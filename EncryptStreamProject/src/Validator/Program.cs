@@ -1,3 +1,5 @@
+using Application.MessageHandlers;
+using Application.Notifications;
 using Infrastructure.Configuration;
 using Validator;
 
@@ -9,8 +11,12 @@ builder.Services.AddMessageBus(configuration);
 builder.Services.ConfigureDomainServices();
 builder.Services.AddDatabase(configuration);
 
-builder.Services.AddHostedService<ValidateSecretWorker>();
-builder.Services.AddHostedService<CheckSecretProcessingWorker>();
+builder.Services.AddHostedService<ValidatorConsumer>();
 
 var host = builder.Build();
+
+using var scope = host.Services.CreateScope();
+var messageHandler = scope.ServiceProvider.GetRequiredService<IMessageHandler>();
+messageHandler.AddSubscription<SecretEncrypted>();
+
 await host.RunAsync();

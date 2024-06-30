@@ -1,6 +1,5 @@
 using Application.Events;
 using Application.MessageHandlers;
-using Application.Notifications;
 using Encryptor;
 using Infrastructure.Configuration;
 

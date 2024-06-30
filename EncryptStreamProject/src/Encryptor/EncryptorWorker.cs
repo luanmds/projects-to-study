@@ -35,6 +35,7 @@ public class EncryptorWorker(
             GroupId = channel.ConsumerGroupId,
             EnableAutoCommit = true,
             SessionTimeoutMs = messageBusSettings.SessionTimeout,
+            EnableAutoOffsetStore = true,
             AutoOffsetReset = AutoOffsetReset.Latest
         };
         
@@ -74,11 +75,12 @@ public class EncryptorWorker(
                     catch (Exception e)
                     {
                         logger.LogError(e, "Error in manipulate message");
+                        throw;
                     }
                     
                     logger.LogInformation("Message with Key {Key} and Type {Type} has been consumed",
                         result.Message.Key,
-                        result.Message.Value.Type);
+                        messageData.GetType());
                 }
                 catch (ConsumeException e)
                 {

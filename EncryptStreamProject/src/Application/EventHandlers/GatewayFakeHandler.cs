@@ -1,12 +1,10 @@
 ﻿using Application.Events;
-using Application.Notifications;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace Application.EventHandlers;
 
-public class GatewayFakeHandler(ILogger<GatewayFakeHandler> logger) 
-    : INotificationHandler<SecretEncrypted>
+public class GatewayFakeHandler(ILogger<GatewayFakeHandler> logger) : IRequestHandler<SecretEncrypted>
 {
     public Task Handle(SecretEncrypted request, CancellationToken cancellationToken)
     {

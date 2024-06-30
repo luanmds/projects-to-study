@@ -18,8 +18,7 @@ public class SecretService(ISecretRepository secretRepository) : ISecretService
 
         return encrypted;
     }
-
-    // TODO: VALIDATE SECRET HERE
+    
     public async Task<bool> ValidateSecret(string encryptedText, SecretEncryptData secretEncryptData)
     {
         _ = secretEncryptData.EncryptType switch
@@ -35,16 +34,17 @@ public class SecretService(ISecretRepository secretRepository) : ISecretService
     {
         var secret = new Secret(text, new SecretEncryptData { KeyValue = keyValue, EncryptType = encryptType});
 
-        await secretRepository.SaveAsync(secret);
+        await secretRepository.AddAsync(secret);
+        await secretRepository.Commit();
 
         return secret.Id;
     }
     
-    // TODO: ENCRYPT USING AES
     private static async Task<string> EncryptAes(string text, string keyValue)
     {
         var aes = Aes.Create();
-        aes.Key = Encoding.UTF8.GetBytes(keyValue);
+        var key = await GetCryptorKeyAsBytes(keyValue);
+        aes.Key = key;
 
         using var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
         using var msEncrypt = new MemoryStream();
@@ -59,7 +59,7 @@ public class SecretService(ISecretRepository secretRepository) : ISecretService
     private static async Task<string> DecryptAes(string encryptedText, string keyValue)
     {
         var aes = Aes.Create();
-        aes.Key = Encoding.UTF8.GetBytes(keyValue);
+        aes.Key = await GetCryptorKeyAsBytes(keyValue);
         
         using var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
         using var msDecrypt = new MemoryStream(Encoding.UTF8.GetBytes(encryptedText));
@@ -70,4 +70,7 @@ public class SecretService(ISecretRepository secretRepository) : ISecretService
 
         return plaintext;
     }
+
+    private static async Task<byte[]> GetCryptorKeyAsBytes(string text) => 
+        await SHA256.HashDataAsync(new MemoryStream(Encoding.UTF8.GetBytes(text)));
 }

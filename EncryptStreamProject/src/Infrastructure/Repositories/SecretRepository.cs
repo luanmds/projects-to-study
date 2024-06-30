@@ -1,16 +1,16 @@
 using Domain.Model;
 using Domain.Repositories;
 using Infrastructure.Settings;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
-public class SecretRepository(SecretDbContext dbContext) : ISecretRepository
+public sealed class SecretRepository(SecretDbContext dbContext) : ISecretRepository, IDisposable
 {
-    public async Task SaveAsync(Secret secret)
+    private bool _disposed;
+    
+    public async Task AddAsync(Secret secret)
     {
         await dbContext.Secrets.AddAsync(secret);
-        await dbContext.SaveChangesAsync();
     }
 
     public async Task<Secret?> GetById(string secretId)
@@ -18,9 +18,29 @@ public class SecretRepository(SecretDbContext dbContext) : ISecretRepository
         return await dbContext.Secrets.FindAsync(secretId);
     }
 
-    public async Task Update(Secret secret)
+    public void Update(Secret secret)
     {
         dbContext.Secrets.Update(secret);
+    }
+
+    public async Task Commit()
+    {
         await dbContext.SaveChangesAsync();
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (!_disposed && disposing)
+        {
+            dbContext.Dispose();
+        }
+        
+        _disposed = true;
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 }

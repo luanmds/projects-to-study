@@ -1,4 +1,6 @@
+using Application.Events.Abstractions;
 using Application.MessageHandlers;
+using Application.Notifications.Abstractions;
 using Confluent.Kafka;
 using Infrastructure.MessageBus;
 using Infrastructure.MessageBus.Model;
@@ -7,10 +9,10 @@ using MediatR;
 
 namespace Validator;
 
-public class ValidateSecretWorker(MessageBusSettings messageBusSettings, 
+public class ValidatorConsumer(MessageBusSettings messageBusSettings, 
     IMessageHandler messageHandler,
     IServiceScopeFactory serviceScopeFactory,
-    ILogger<ValidateSecretWorker> logger) : BackgroundService
+    ILogger<ValidatorConsumer> logger) : BackgroundService
 {
     private const string ConsumerGroupId = "ValidateSecretNotifications";
     
@@ -68,16 +70,25 @@ public class ValidateSecretWorker(MessageBusSettings messageBusSettings,
 
                     try
                     {
-                        await mediator.Send(messageData, stoppingToken);
+                        switch (messageData)
+                        {
+                            case Event:
+                                await mediator.Send(messageData, stoppingToken);
+                                break;
+                            case Notification:
+                                await mediator.Publish(messageData, stoppingToken);
+                                break;
+                        }
                     }
                     catch (Exception e)
                     {
                         logger.LogError(e, "Error in manipulate message");
+                        throw;
                     }
                     
                     logger.LogInformation("Message with Key {Key} and Type {Type} has been consumed",
                         result.Message.Key,
-                        result.Message.Value.Type);
+                        messageData.GetType());
                 }
                 catch (ConsumeException e)
                 {

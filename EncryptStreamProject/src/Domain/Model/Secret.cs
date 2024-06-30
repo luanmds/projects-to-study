@@ -22,7 +22,14 @@ public class Secret : AggregateRoot<Secret>
 
     public void UpdateTextEncrypted(string textEncrypted)
     {
+        if(EncryptStatus == EncryptStatus.Encrypted) return;
         TextEncrypted = textEncrypted;
         EncryptStatus = EncryptStatus.Encrypted;
+    }
+
+    public void UpdateValidStatus(bool isValid)
+    {
+        if (EncryptStatus != EncryptStatus.Encrypted) return;
+        EncryptStatus = isValid ? EncryptStatus.Valid : EncryptStatus.NotValid;
     }
 }
