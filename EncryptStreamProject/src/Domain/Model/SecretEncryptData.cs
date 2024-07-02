@@ -1,4 +1,5 @@
 using Domain.Abstractions;
+using Domain.Model.Enum;
 
 namespace Domain.Model;
 

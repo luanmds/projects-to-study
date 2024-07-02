@@ -1,4 +1,5 @@
 using Domain.Model;
+using Domain.Model.Enum;
 
 namespace Domain.Services;
 

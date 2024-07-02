@@ -15,7 +15,7 @@ public class ValidateSecretCommandHandler(
     public async Task Handle(ValidateSecret request, CancellationToken cancellationToken)
     {
         var secret = await secretRepository.GetById(request.SecretId);
-        var isValid = await secretService.ValidateSecret(secret!.TextEncrypted, secret.SecretEncryptData);
+        var isValid = await secretService.ValidateSecret(secret.TextEncrypted, secret.SecretEncryptData);
 
         secret.UpdateValidStatus(isValid);
 

@@ -1,3 +1,4 @@
+using Application.Exceptions;
 using Domain.Model;
 using Domain.Repositories;
 using Infrastructure.Settings;
@@ -13,9 +14,13 @@ public sealed class SecretRepository(SecretDbContext dbContext) : ISecretReposit
         await dbContext.Secrets.AddAsync(secret);
     }
 
-    public async Task<Secret?> GetById(string secretId)
+    public async Task<Secret> GetById(string secretId)
     {
-        return await dbContext.Secrets.FindAsync(secretId);
+        var secret = await dbContext.Secrets.FindAsync(secretId);
+
+        if (secret is null) throw new AggregateNotFoundException($"Not found Secret with Id {secretId}");
+
+        return secret;
     }
 
     public void Update(Secret secret)

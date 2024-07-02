@@ -2,7 +2,7 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Application.NotificationHandler;
+namespace Application.NotificationHandlers;
 
 public class SecretCheckEncryptedNotificationHandler(ILogger<SecretCheckEncryptedNotificationHandler> logger) 
     : INotificationHandler<SecretEncrypted>

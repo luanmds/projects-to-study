@@ -1,12 +1,17 @@
 using System.Security.Cryptography;
 using System.Text;
 using Domain.Model;
+using Domain.Model.Enum;
 using Domain.Repositories;
 using Domain.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Services;
 
-public class SecretService(ISecretRepository secretRepository) : ISecretService
+public class SecretService(
+    ISecretRepository secretRepository, 
+    CryptorBuilder cryptorBuilder, 
+    ILogger<SecretService> logger) : ISecretService
 {
     public async Task<string> EncryptSecret(string text, SecretEncryptData secretEncryptData)
     {
@@ -21,13 +26,13 @@ public class SecretService(ISecretRepository secretRepository) : ISecretService
     
     public async Task<bool> ValidateSecret(string encryptedText, SecretEncryptData secretEncryptData)
     {
-        _ = secretEncryptData.EncryptType switch
+        var result = secretEncryptData.EncryptType switch
         {
             EncryptType.Aes => await DecryptAes(encryptedText, secretEncryptData.KeyValue),
             _ => throw new ArgumentOutOfRangeException(secretEncryptData.EncryptType.ToString())
         };
 
-        return true;
+        return result is not null;
     }
 
     public async Task<string> PersistSecret(string text, string keyValue, EncryptType encryptType)
@@ -40,35 +45,53 @@ public class SecretService(ISecretRepository secretRepository) : ISecretService
         return secret.Id;
     }
     
-    private static async Task<string> EncryptAes(string text, string keyValue)
+    private async Task<string> EncryptAes(string text, string keyValue)
     {
-        var aes = Aes.Create();
         var key = await GetCryptorKeyAsBytes(keyValue);
-        aes.Key = key;
+        var aes = cryptorBuilder
+            .UseAes()
+            .WithKey(key)
+            .WithPadding()
+            .WithInitializationVector()
+            .Build();
 
-        using var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+        var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
         using var msEncrypt = new MemoryStream();
         await using var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
         await using var swEncrypt = new StreamWriter(csEncrypt);
         
         await swEncrypt.WriteAsync(text);
+        await csEncrypt.FlushFinalBlockAsync();
+        
         var encrypted = msEncrypt.ToArray();
-        return Convert.ToHexString(encrypted);
+        return Convert.ToBase64String(encrypted);
     }
     
-    private static async Task<string> DecryptAes(string encryptedText, string keyValue)
+    private async Task<string?> DecryptAes(string encryptedText, string keyValue)
     {
-        var aes = Aes.Create();
-        aes.Key = await GetCryptorKeyAsBytes(keyValue);
+        var key = await GetCryptorKeyAsBytes(keyValue);
+        var aes = cryptorBuilder
+            .UseAes()
+            .WithKey(key)
+            .WithPadding()
+            .WithInitializationVector()
+            .Build();
         
         using var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-        using var msDecrypt = new MemoryStream(Encoding.UTF8.GetBytes(encryptedText));
+        using var msDecrypt = new MemoryStream(Convert.FromBase64String(encryptedText));
         await using var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read);
         using var srDecrypt = new StreamReader(csDecrypt);
-        
-        var plaintext = await srDecrypt.ReadToEndAsync();
 
-        return plaintext;
+        try
+        {
+            var plaintext = await srDecrypt.ReadToEndAsync();
+            return plaintext;
+        }
+        catch (CryptographicException e)
+        {
+            logger.LogError(e, "Error in Decrypt secret");
+            return null;
+        }
     }
 
     private static async Task<byte[]> GetCryptorKeyAsBytes(string text) => 

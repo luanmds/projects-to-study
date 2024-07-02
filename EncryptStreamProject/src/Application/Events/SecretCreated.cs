@@ -4,7 +4,7 @@ using Domain.Events;
 namespace Application.Events;
 
 public class SecretCreated(
-    string traceKey, string applicationId, string secretId)
+    string secretId, string traceKey, string applicationId)
     : Event(traceKey, applicationId, "SecretCreated"), ISecretCreated
 {
     public string SecretId { get; init; } = secretId;

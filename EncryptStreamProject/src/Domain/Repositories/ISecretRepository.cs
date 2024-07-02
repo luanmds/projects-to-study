@@ -6,7 +6,7 @@ public interface ISecretRepository
 {
     Task AddAsync(Secret secret);
 
-    Task<Secret?> GetById(string secretId);
+    Task<Secret> GetById(string secretId);
 
     void Update(Secret secret);
 

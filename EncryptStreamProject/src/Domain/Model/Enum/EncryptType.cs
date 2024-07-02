@@ -1,6 +1,7 @@
-namespace Domain.Model;
+namespace Domain.Model.Enum;
 
 public enum EncryptType
 {
-    Aes
+    None = 0,
+    Aes = 1
 }

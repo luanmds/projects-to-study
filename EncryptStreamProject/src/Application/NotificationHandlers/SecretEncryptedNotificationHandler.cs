@@ -4,19 +4,19 @@ using Application.Publishers;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Application.NotificationHandler;
+namespace Application.NotificationHandlers;
 
 public class SecretEncryptedNotificationHandler(
-    ILogger<SecretEncryptedNotificationHandler> logger,
-    ICommandPublisher commandPublisher) 
+    ICommandPublisher commandPublisher,
+    ILogger<SecretEncryptedNotificationHandler> logger) 
     : INotificationHandler<SecretEncrypted>
 {
     public async Task Handle(SecretEncrypted request, CancellationToken cancellationToken)
     {
-        var command = new ValidateSecret(request.TraceKey, request.SecretId);
+        var command = new ValidateSecret(request.SecretId, request.TraceKey);
 
         await commandPublisher.Publish(command, cancellationToken);
         
-        logger.LogInformation("Secret encrypted notification has received");
+        logger.LogInformation("[Validate Secret] Secret {Id} encrypted notification has received", request.SecretId);
     }
 }

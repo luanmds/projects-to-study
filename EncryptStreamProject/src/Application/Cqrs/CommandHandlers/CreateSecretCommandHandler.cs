@@ -2,14 +2,17 @@ using Application.Cqrs.Commands;
 using Application.Events;
 using Application.Publishers;
 using Domain.Model;
+using Domain.Model.Enum;
 using Domain.Services;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Cqrs.CommandHandlers;
 
 public class CreateSecretCommandHandler(
     ISecretService secretService, 
-    IEventPublisher eventPublisher) 
+    IEventPublisher eventPublisher,
+    ILogger<CreateSecretCommandHandler> logger) 
     : IRequestHandler<CreateSecret>
 {
     public async Task Handle(CreateSecret request, CancellationToken cancellationToken)
@@ -17,8 +20,10 @@ public class CreateSecretCommandHandler(
         var secretId = await secretService.PersistSecret(
             request.SecretTextRaw, request.CorrelationId, EncryptType.Aes);
         
-        var @event = new SecretCreated(request.CorrelationId, "Encryptor", secretId );
+        var @event = new SecretCreated(secretId, request.CorrelationId, "Encryptor" );
 
         await eventPublisher.Publish(@event, cancellationToken);
+        
+        logger.LogInformation("[Create Secret] Secret {SecretId} as been created", secretId);
     }
 }

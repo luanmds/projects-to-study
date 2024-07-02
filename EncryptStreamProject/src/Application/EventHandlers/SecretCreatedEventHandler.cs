@@ -9,17 +9,17 @@ using Microsoft.Extensions.Logging;
 namespace Application.EventHandlers;
 
 public class SecretCreatedEventHandler(
-    ILogger<SecretCreatedEventHandler> logger,
     ICommandPublisher commandPublisher,
     ISecretService secretService,
-    ISecretRepository secretRepository) 
+    ISecretRepository secretRepository,
+    ILogger<SecretCreatedEventHandler> logger) 
     : IEventHandler<SecretCreated>
 {
     public async Task Handle(SecretCreated request, CancellationToken cancellationToken)
     {
         var secret = await secretRepository.GetById(request.SecretId);
         
-        var textEncrypted = await secretService.EncryptSecret(secret!.TextEncrypted, secret.SecretEncryptData);
+        var textEncrypted = await secretService.EncryptSecret(secret.TextEncrypted, secret.SecretEncryptData);
 
         var command = new UpdateTextSecret(
             Guid.NewGuid().ToString(), 
@@ -29,6 +29,6 @@ public class SecretCreatedEventHandler(
         
         await commandPublisher.Publish(command, cancellationToken);
         
-        logger.LogInformation("Secret created event has been processed. SecretId {Id}", secret.Id);
+        logger.LogInformation("Secret {Id} created event has been processed.", secret.Id);
     }
 }

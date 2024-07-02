@@ -9,5 +9,6 @@ public static class ConfigureDependencies
     public static void ConfigureDomainServices(this IServiceCollection services)
     {
         services.AddScoped<ISecretService, SecretService>();
+        services.AddScoped<CryptorBuilder>();
     }
 }

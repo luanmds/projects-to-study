@@ -5,15 +5,15 @@ namespace Infrastructure.MessageBus.Model;
 [ExcludeFromCodeCoverage]
 public class Message
 {
-    public string Id { get; init; }
+    public required string Id { get; init; }
     
     public DateTimeOffset CreatedAt { get; init; }
     
-    public object Data { get; init; }
+    public required object Data { get; init; }
     
     public MessageType Type { get; init; }
     
-    public string Label { get; init; }
+    public required string Label { get; init; }
 }
 
 public enum MessageType
