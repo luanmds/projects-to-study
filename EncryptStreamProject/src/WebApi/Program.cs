@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Application.Cqrs.Commands;
 using Application.Publishers;
 using Infrastructure.Configuration;
@@ -6,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using WebApi;
+
+[assembly: ExcludeFromCodeCoverage]
 
 // Config Logs
 Log.Logger = new LoggerConfiguration()

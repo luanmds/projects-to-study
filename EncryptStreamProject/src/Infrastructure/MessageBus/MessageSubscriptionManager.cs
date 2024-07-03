@@ -1,10 +1,10 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics.CodeAnalysis;
 using Domain.Events.Abstractions;
 using Infrastructure.MessageBus.Model;
-using MediatR;
 
 namespace Infrastructure.MessageBus;
 
+[ExcludeFromCodeCoverage]
 public static class MessageSubscriptionManager
 {
     public static Message ParseEventToMessage<T>(T @event) where T : IEvent

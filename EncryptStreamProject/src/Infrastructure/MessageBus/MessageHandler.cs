@@ -1,9 +1,11 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using Application.MessageHandlers;
 using Domain.Events.Abstractions;
 
 namespace Infrastructure.MessageBus;
 
+[ExcludeFromCodeCoverage]
 public class MessageHandler : IMessageHandler
 {
     private readonly List<Type> _messageTypes = [];

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Application.MessageHandlers;
 using Confluent.Kafka;
 using Infrastructure.MessageBus;
@@ -7,6 +8,7 @@ using MediatR;
 
 namespace Encryptor;
 
+[ExcludeFromCodeCoverage]
 public class EncryptorWorker(
     MessageBusSettings messageBusSettings, 
     IMessageHandler messageHandler,

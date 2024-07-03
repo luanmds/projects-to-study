@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Application.Exceptions;
 using Domain.Model;
 using Domain.Repositories;
@@ -32,7 +33,8 @@ public sealed class SecretRepository(SecretDbContext dbContext) : ISecretReposit
     {
         await dbContext.SaveChangesAsync();
     }
-
+    
+    [ExcludeFromCodeCoverage]
     private void Dispose(bool disposing)
     {
         if (!_disposed && disposing)
@@ -43,6 +45,7 @@ public sealed class SecretRepository(SecretDbContext dbContext) : ISecretReposit
         _disposed = true;
     }
 
+    [ExcludeFromCodeCoverage]
     public void Dispose()
     {
         Dispose(true);

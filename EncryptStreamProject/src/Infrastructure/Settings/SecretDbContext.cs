@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using Domain.Model;
+using Domain.Model; 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -11,7 +11,7 @@ public class SecretDbContext : DbContext
     public SecretDbContext(){}
     public SecretDbContext(DbContextOptions<SecretDbContext> options) : base(options) { }
 
-    public DbSet<Secret> Secrets { get; init; } = null!;
+    public virtual DbSet<Secret> Secrets { get; init; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -20,9 +20,10 @@ public class SecretDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Username=postgres;Password=admin");
+     
 }
 
-
+[ExcludeFromCodeCoverage]
 public class SecretEntityTypeConfiguration : IEntityTypeConfiguration<Secret>
 {
     public void Configure(EntityTypeBuilder<Secret> builder)

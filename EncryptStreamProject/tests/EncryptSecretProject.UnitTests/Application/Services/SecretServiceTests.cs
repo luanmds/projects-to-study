@@ -112,4 +112,22 @@ public class SecretServiceTests
         // Assert 
         await Assert.ThrowsAsync<ArgumentOutOfRangeException>(sut);
     }
+    
+    [Trait("Feature", "Create Secret")]
+    [Theory(DisplayName = "Given valid encrypt type, should returns encrypted text")]
+    [AutoData]
+    public async Task PersistSecret__GivenValidEncryptType__ShouldReturnsEncryptedText(
+        string text, string keyValue, EncryptType encryptType)
+    {
+        // Act
+        var sut = await _service.PersistSecret(text, keyValue, encryptType);
+        
+        // Assert 
+        Assert.NotEmpty(sut);
+        await _secretRepository.Received().AddAsync(Arg.Is<Secret>(s => 
+            s.TextEncrypted == text && 
+            s.SecretEncryptData.KeyValue == keyValue &&
+            s.SecretEncryptData.EncryptType == encryptType));
+        await _secretRepository.Received().Commit();
+    }
 }

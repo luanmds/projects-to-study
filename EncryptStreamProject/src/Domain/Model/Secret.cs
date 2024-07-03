@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Domain.Exceptions;
 using Domain.Model.Abstractions;
 using Domain.Model.Enum;
@@ -11,6 +12,7 @@ public class Secret : AggregateRoot<Secret>
     public DateTime CreatedAt { get; init; }
     public EncryptStatus EncryptStatus { get; private set; }
 
+    [ExcludeFromCodeCoverage]
     protected Secret(string id) : base(id){ }
 
     public Secret(string textEncrypted, SecretEncryptData secretEncryptData) : base(Guid.NewGuid().ToString())

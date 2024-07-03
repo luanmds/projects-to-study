@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Application.Events.Abstractions;
 using Application.MessageHandlers;
 using Application.Notifications.Abstractions;
@@ -9,6 +10,7 @@ using MediatR;
 
 namespace Validator;
 
+[ExcludeFromCodeCoverage]
 public class ValidatorConsumer(MessageBusSettings messageBusSettings, 
     IMessageHandler messageHandler,
     IServiceScopeFactory serviceScopeFactory,
