@@ -1,5 +1,4 @@
 using System.Security.Cryptography;
-using System.Text;
 using Domain.Model;
 using Domain.Model.Enum;
 using Domain.Repositories;
@@ -47,44 +46,42 @@ public class SecretService(
     
     private async Task<string> EncryptAes(string text, string keyValue)
     {
-        var key = await GetCryptorKeyAsBytes(keyValue);
         var aes = cryptorBuilder
             .UseAes()
-            .WithKey(key)
-            .WithPadding()
+            .WithKey(keyValue)
+            .WithPaddingPkcs7()
             .WithInitializationVector()
             .Build();
 
         var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
-        using var msEncrypt = new MemoryStream();
-        await using var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
-        await using var swEncrypt = new StreamWriter(csEncrypt);
+        using var memoryStream = new MemoryStream();
+        await using var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write);
+        await using var streamWriter = new StreamWriter(cryptoStream);
         
-        await swEncrypt.WriteAsync(text);
-        await csEncrypt.FlushFinalBlockAsync();
+        await streamWriter.WriteAsync(text);
+        await cryptoStream.FlushFinalBlockAsync();
         
-        var encrypted = msEncrypt.ToArray();
+        var encrypted = memoryStream.ToArray();
         return Convert.ToBase64String(encrypted);
     }
     
     private async Task<string?> DecryptAes(string encryptedText, string keyValue)
     {
-        var key = await GetCryptorKeyAsBytes(keyValue);
-        var aes = cryptorBuilder
+        using var aes = cryptorBuilder
             .UseAes()
-            .WithKey(key)
-            .WithPadding()
+            .WithKey(keyValue)
+            .WithPaddingPkcs7()
             .WithInitializationVector()
             .Build();
         
         using var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-        using var msDecrypt = new MemoryStream(Convert.FromBase64String(encryptedText));
-        await using var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read);
-        using var srDecrypt = new StreamReader(csDecrypt);
+        using var memoryStream = new MemoryStream(Convert.FromBase64String(encryptedText));
+        await using var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read);
+        using var streamReader = new StreamReader(cryptoStream);
 
         try
         {
-            var plaintext = await srDecrypt.ReadToEndAsync();
+            var plaintext = await streamReader.ReadToEndAsync();
             return plaintext;
         }
         catch (CryptographicException e)
@@ -93,7 +90,4 @@ public class SecretService(
             return null;
         }
     }
-
-    private static async Task<byte[]> GetCryptorKeyAsBytes(string text) => 
-        await SHA256.HashDataAsync(new MemoryStream(Encoding.UTF8.GetBytes(text)));
 }

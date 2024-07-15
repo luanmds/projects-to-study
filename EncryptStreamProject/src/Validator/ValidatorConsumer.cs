@@ -6,6 +6,7 @@ using Confluent.Kafka;
 using Infrastructure.MessageBus;
 using Infrastructure.MessageBus.Model;
 using Infrastructure.MessageBus.Serializers;
+using Infrastructure.Repositories.Abstractions;
 using MediatR;
 
 namespace Validator;
@@ -38,7 +39,7 @@ public class ValidatorConsumer(MessageBusSettings messageBusSettings,
             GroupId = channel.ConsumerGroupId,
             EnableAutoCommit = true,
             SessionTimeoutMs = messageBusSettings.SessionTimeout,
-            AutoOffsetReset = AutoOffsetReset.Latest
+            AutoOffsetReset = AutoOffsetReset.Earliest
         };
         
         using var consumer = new ConsumerBuilder<string, Message>(config)
@@ -85,7 +86,10 @@ public class ValidatorConsumer(MessageBusSettings messageBusSettings,
                     catch (Exception e)
                     {
                         logger.LogError(e, "Error in manipulate message");
-                        throw;
+                        
+                        var repository = scope.ServiceProvider.GetRequiredService<IMessageRepository>();
+                        await repository.AddAsync(message);
+                        await repository.Commit();
                     }
                     
                     logger.LogInformation("Message with Key {Key} and Type {Type} has been consumed",

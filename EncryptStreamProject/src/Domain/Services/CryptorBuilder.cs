@@ -1,5 +1,4 @@
-﻿
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -8,8 +7,7 @@ namespace Domain.Services;
 [ExcludeFromCodeCoverage]
 public class CryptorBuilder
 {
-    private SymmetricAlgorithm? _algorithm = null;
-    private readonly byte[] _initializationVectorDefault = RandomNumberGenerator.GetBytes(16);
+    private SymmetricAlgorithm? _algorithm;
 
     public CryptorBuilder UseAes()
     {
@@ -17,21 +15,21 @@ public class CryptorBuilder
         return this;
     }
 
-    public CryptorBuilder WithPadding()
+    public CryptorBuilder WithPaddingPkcs7()
     {
         _algorithm!.Padding = PaddingMode.PKCS7;
         return this;
     }
     
-    public CryptorBuilder WithKey(byte[] key)
+    public CryptorBuilder WithKey(string key)
     {
-        _algorithm!.Key = key;
+        _algorithm!.Key = SHA256.HashData(new MemoryStream(Encoding.UTF8.GetBytes(key)));
         return this;
     }
     
-    public CryptorBuilder WithInitializationVector()
+    public CryptorBuilder WithInitializationVector(int byteArraySize = 16)
     {
-        _algorithm!.IV = _initializationVectorDefault;
+        _algorithm!.IV = new byte[byteArraySize];
         return this;
     }
 

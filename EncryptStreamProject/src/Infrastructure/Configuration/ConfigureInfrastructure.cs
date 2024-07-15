@@ -5,6 +5,7 @@ using Application.Publishers;
 using Domain.Repositories;
 using Infrastructure.MessageBus;
 using Infrastructure.Repositories;
+using Infrastructure.Repositories.Abstractions;
 using Infrastructure.Settings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -34,6 +35,9 @@ public static class ConfigureInfrastructure
     {
         services.AddDbContext<SecretDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+        services.AddDbContext<MessageDbContext>(options =>
+            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
         services.AddScoped<ISecretRepository, SecretRepository>();
+        services.AddScoped<IMessageRepository, MessageRepository>();
     }
 }
