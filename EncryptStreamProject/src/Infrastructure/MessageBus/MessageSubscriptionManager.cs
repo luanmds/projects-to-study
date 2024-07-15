@@ -15,7 +15,8 @@ public static class MessageSubscriptionManager
             Data = @event,
             CreatedAt = DateTimeOffset.UtcNow,
             Label = @event.GetType().Name,
-            Type = MessageType.Event
+            Type = MessageType.Event,
+            RetryCount = 0
         };
     }
 }

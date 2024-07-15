@@ -14,6 +14,8 @@ public class Message
     public MessageType Type { get; init; }
     
     public required string Label { get; init; }
+    
+    public int RetryCount { get; init; }
 }
 
 public enum MessageType

@@ -114,9 +114,9 @@ public class SecretServiceTests
     }
     
     [Trait("Feature", "Create Secret")]
-    [Theory(DisplayName = "Given valid encrypt type, should returns encrypted text")]
+    [Theory(DisplayName = "Given valid data, should persists successfully")]
     [AutoData]
-    public async Task PersistSecret__GivenValidEncryptType__ShouldReturnsEncryptedText(
+    public async Task PersistSecret__GivenValidData__ShouldPersistsSuccessfully(
         string text, string keyValue, EncryptType encryptType)
     {
         // Act
