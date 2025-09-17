@@ -13,5 +13,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\EncryptStreamProject.ServiceDefaults\EncryptStreamProject.ServiceDefaults.csproj" />
   </ItemGroup>
 </Project>

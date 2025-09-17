@@ -7,6 +7,8 @@ var builder = Host.CreateApplicationBuilder(args);
 
 var configuration = builder.Configuration;
 
+builder.AddServiceDefaults();
+
 builder.Services.AddMessageBus(configuration);
 builder.Services.ConfigureDomainServices();
 builder.Services.AddDatabase(configuration);
