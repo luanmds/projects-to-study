@@ -15,9 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\WebApi\WebApi.csproj" />
-    <ProjectReference Include="..\..\Validator\Validator.csproj" />
-    <ProjectReference Include="..\..\Encryptor\Encryptor.csproj" />
+    <ProjectReference Include="..\WebApi\WebApi.csproj" />
+    <ProjectReference Include="..\Validator\Validator.csproj" />
+    <ProjectReference Include="..\Encryptor\Encryptor.csproj" />
   </ItemGroup>
 
 </Project>
