@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Application;
 using Application.MessageHandlers;
 using Application.Publishers;
+using Confluent.Kafka;
 using Domain.Repositories;
 using Infrastructure.MessageBus;
 using Infrastructure.Repositories;
@@ -34,9 +35,9 @@ public static class ConfigureInfrastructure
     public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<SecretDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+            options.UseNpgsql(configuration.GetConnectionString("postgresdb")));
         services.AddDbContext<MessageDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+            options.UseNpgsql(configuration.GetConnectionString("postgresdb")));
         services.AddScoped<ISecretRepository, SecretRepository>();
         services.AddScoped<IMessageRepository, MessageRepository>();
     }
