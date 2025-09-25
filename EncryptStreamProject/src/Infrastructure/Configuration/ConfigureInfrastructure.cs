@@ -2,7 +2,6 @@ using System.Diagnostics.CodeAnalysis;
 using Application;
 using Application.MessageHandlers;
 using Application.Publishers;
-using Confluent.Kafka;
 using Domain.Repositories;
 using Infrastructure.MessageBus;
 using Infrastructure.Repositories;
@@ -11,6 +10,7 @@ using Infrastructure.Settings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Infrastructure.Configuration;
 
@@ -21,11 +21,11 @@ public static class ConfigureInfrastructure
     {
         var messageBusSettings = new MessageBusSettings();
         configuration.GetSection("MessageBusSettings").Bind(messageBusSettings);
-        
+
         services.AddSingleton(messageBusSettings);
-        
+
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<IApplicationEntryPoint>());
-        
+
         services.AddSingleton<IMessageHandler, MessageHandler>();
         services.AddScoped<ICommandPublisher, CommandPublisher>();
         services.AddScoped<IEventPublisher, MessagePublisher>();
@@ -40,5 +40,13 @@ public static class ConfigureInfrastructure
             options.UseNpgsql(configuration.GetConnectionString("postgresdb")));
         services.AddScoped<ISecretRepository, SecretRepository>();
         services.AddScoped<IMessageRepository, MessageRepository>();
+    }
+
+    public static void AddDatabase(this IHostApplicationBuilder builder, IConfiguration configuration)
+    {
+        builder.AddNpgsqlDbContext<SecretDbContext>("postgresdb");
+        builder.AddNpgsqlDbContext<MessageDbContext>("postgresdb");
+        builder.Services.AddScoped<ISecretRepository, SecretRepository>();
+        builder.Services.AddScoped<IMessageRepository, MessageRepository>();
     }
 }

@@ -29,7 +29,7 @@ var appSettings = new ApplicationSettings();
 var appSettingsSection = builder.Configuration.GetSection("ApplicationSettings");
 appSettingsSection.Bind(appSettings);
 
-builder.Services.AddDatabase(builder.Configuration);
+builder.AddDatabase(builder.Configuration);
 builder.Services.ConfigureDomainServices();
 builder.Services.AddMessageBus(builder.Configuration);    
 

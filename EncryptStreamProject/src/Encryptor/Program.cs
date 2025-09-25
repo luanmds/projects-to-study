@@ -11,7 +11,7 @@ builder.AddServiceDefaults();
 
 builder.Services.AddMessageBus(configuration);
 builder.Services.ConfigureDomainServices();
-builder.Services.AddDatabase(configuration);
+builder.AddDatabase(configuration);
 
 builder.Services.AddHostedService<EncryptorWorker>();
 
