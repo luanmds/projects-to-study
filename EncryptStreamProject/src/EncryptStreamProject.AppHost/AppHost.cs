@@ -9,10 +9,12 @@ var postgres = builder.AddPostgres("postgres", port: 5432)
 var postgresdb = postgres.AddDatabase("postgresdb");
 
 builder.AddProject<Projects.Validator>("validator")
-    .WithReference(postgresdb);
+    .WithReference(postgresdb)
+    .WaitFor(postgresdb);
 
 builder.AddProject<Projects.Encryptor>("encryptor")
-    .WithReference(postgresdb);
+    .WithReference(postgresdb)
+    .WaitFor(postgresdb);
 
 builder.AddProject<Projects.WebApi>("api")
     .WithExternalHttpEndpoints()

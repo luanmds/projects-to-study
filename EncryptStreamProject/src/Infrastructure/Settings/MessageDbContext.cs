@@ -19,7 +19,12 @@ public class MessageDbContext : DbContext
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Username=postgres;Password=admin");
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseNpgsql("postgresdb");
+        }
+    }
      
 }
 
