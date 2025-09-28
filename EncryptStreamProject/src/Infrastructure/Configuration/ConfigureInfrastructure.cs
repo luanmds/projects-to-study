@@ -7,7 +7,6 @@ using Infrastructure.MessageBus;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.Abstractions;
 using Infrastructure.Settings;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -32,15 +31,16 @@ public static class ConfigureInfrastructure
         services.AddScoped<INotificationPublisher, MessagePublisher>();
     }
 
-    public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.AddDbContext<SecretDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("postgresdb")));
-        services.AddDbContext<MessageDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("postgresdb")));
-        services.AddScoped<ISecretRepository, SecretRepository>();
-        services.AddScoped<IMessageRepository, MessageRepository>();
-    }
+    // Deprecated in favor of IHostApplicationBuilder extension method
+    // public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
+    // {
+    //     services.AddDbContext<SecretDbContext>(options =>
+    //         options.UseNpgsql(configuration.GetConnectionString("postgresdb")));
+    //     services.AddDbContext<MessageDbContext>(options =>
+    //         options.UseNpgsql(configuration.GetConnectionString("postgresdb")));
+    //     services.AddScoped<ISecretRepository, SecretRepository>();
+    //     services.AddScoped<IMessageRepository, MessageRepository>();
+    // }
 
     public static void AddDatabase(this IHostApplicationBuilder builder, IConfiguration configuration)
     {

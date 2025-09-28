@@ -3,7 +3,6 @@ using Application.MessageHandlers;
 using Confluent.Kafka;
 using Infrastructure.MessageBus;
 using Infrastructure.MessageBus.Model;
-using Infrastructure.MessageBus.Serializers;
 using Infrastructure.Repositories.Abstractions;
 using MediatR;
 
@@ -11,44 +10,22 @@ namespace Encryptor;
 
 [ExcludeFromCodeCoverage]
 public class EncryptorWorker(
-    MessageBusSettings messageBusSettings, 
+    IConsumer<string, Message> consumer,
+    MessageBusSettings messageBusSettings,
     IMessageHandler messageHandler,
     IServiceScopeFactory serviceScopeFactory,
     ILogger<EncryptorWorker> logger) : BackgroundService
 {
-    private const string ConsumerGroupId = "SecretEvents";
     
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        logger.LogInformation("Start Encryptor Worker for ConsumerGroup {ConsumerGroup} ", ConsumerGroupId);
+        logger.LogInformation("Encryptor Worker started at: {time}", DateTimeOffset.Now);
         
-        var channel = messageBusSettings
-            .MessageBusChannels
-            .Find(x => x is { IsPublisher: false, ConsumerGroupId: ConsumerGroupId });
+        var topicName = messageBusSettings.MessageBusChannels
+            .Find(x => x is { IsPublisher: false, ConsumerGroupId: KafkaConfigExtensions.ConsumerGroupId })!.TopicName;
 
-        if (channel is null)
-        {
-            logger.LogError("Channel with ConsumerGroupId {GroupId} to consume not found", ConsumerGroupId);
-            return;
-        }
-        
-        var config = new ConsumerConfig()
-        {
-            BootstrapServers = messageBusSettings.BrokerServer,
-            GroupId = channel.ConsumerGroupId,
-            EnableAutoCommit = true,
-            SessionTimeoutMs = messageBusSettings.SessionTimeout,
-            EnableAutoOffsetStore = true,
-            AutoOffsetReset = AutoOffsetReset.Latest
-        };
-        
-        using var consumer = new ConsumerBuilder<string, Message>(config)
-            .SetKeyDeserializer(Deserializers.Utf8)
-            .SetValueDeserializer(new MessageDeserializer())
-            .Build();
-        
-        consumer.Subscribe(channel.TopicName);
-        
+        consumer.Subscribe(topicName);
+
         try
         {
             while (!stoppingToken.IsCancellationRequested)
