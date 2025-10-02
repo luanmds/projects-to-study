@@ -5,47 +5,27 @@ using Application.Notifications.Abstractions;
 using Confluent.Kafka;
 using Infrastructure.MessageBus;
 using Infrastructure.MessageBus.Model;
-using Infrastructure.MessageBus.Serializers;
 using Infrastructure.Repositories.Abstractions;
 using MediatR;
 
 namespace Validator;
 
 [ExcludeFromCodeCoverage]
-public class ValidatorConsumer(MessageBusSettings messageBusSettings, 
+public class ValidatorWorker(
+    IConsumer<string, Message> consumer,
+    MessageBusSettings messageBusSettings, 
     IMessageHandler messageHandler,
     IServiceScopeFactory serviceScopeFactory,
-    ILogger<ValidatorConsumer> logger) : BackgroundService
+    ILogger<ValidatorWorker> logger) : BackgroundService
 {
-    private const string ConsumerGroupId = "ValidateSecretNotifications";
     
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        logger.LogInformation("Start Validate Secret Worker for ConsumerGroup {ConsumerGroup} ", ConsumerGroupId);
+        logger.LogInformation("Validator Worker started at: {time}", DateTimeOffset.Now);
         
         var channel = messageBusSettings
             .MessageBusChannels
-            .Find(x => x is { IsPublisher: false, ConsumerGroupId: ConsumerGroupId });
-
-        if (channel is null)
-        {
-            logger.LogError("Channel with ConsumerGroupId {GroupId} to consume not found", ConsumerGroupId);
-            return;
-        }
-        
-        var config = new ConsumerConfig()
-        {
-            BootstrapServers = messageBusSettings.BrokerServer,
-            GroupId = channel.ConsumerGroupId,
-            EnableAutoCommit = true,
-            SessionTimeoutMs = messageBusSettings.SessionTimeout,
-            AutoOffsetReset = AutoOffsetReset.Earliest
-        };
-        
-        using var consumer = new ConsumerBuilder<string, Message>(config)
-            .SetKeyDeserializer(Deserializers.Utf8)
-            .SetValueDeserializer(new MessageDeserializer())
-            .Build();
+            .Find(x => x is { IsPublisher: false, ConsumerGroupId: KafkaConfigExtensions.ConsumerGroupId })!;
         
         consumer.Subscribe(channel.TopicName);
         

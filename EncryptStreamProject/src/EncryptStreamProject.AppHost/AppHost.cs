@@ -16,12 +16,12 @@ var kafka = builder.AddKafka("kafka")
 // Add Kafka topic initialization
 var initKafka = builder.AddContainer("init-kafka", "confluentinc/cp-kafka", "6.1.1")
     .WithArgs("/bin/sh", "-c",
-        "kafka-topics --bootstrap-server kafka:s9093 --list && " +
+        "kafka-topics --bootstrap-server kafka:9093 --list && " +
         "echo -e 'Creating kafka topics' && " +
-        "kafka-topics --create --topic encryptor-notifications --partitions 1 --replication-factor 1 --bootstrap-server kafka:s9093 --if-not-exists && " +
-        "kafka-topics --create --topic encryptor-events --partitions 1 --replication-factor 1 --bootstrap-server kafka:s9093 --if-not-exists && " +
+        "kafka-topics --create --topic encryptor-notifications --partitions 1 --replication-factor 1 --bootstrap-server kafka:9093 --if-not-exists && " +
+        "kafka-topics --create --topic encryptor-events --partitions 1 --replication-factor 1 --bootstrap-server kafka:9093 --if-not-exists && " +
         "echo -e 'Successfully created the following topics:' && " +
-        "kafka-topics --bootstrap-server kafka:s9093 --list")
+        "kafka-topics --bootstrap-server kafka:9093 --list")
     .WithReference(kafka)
     .WaitFor(kafka);
 
