@@ -12,13 +12,23 @@ public static class ApiEndpointsExtensions
 {
     public static void MapApiEndpoints(this WebApplication app)
     {
-        app.MapPost("/send", async ([FromServices] ICommandPublisher publisher) =>
+        app.MapPost("/send", async (
+            [FromServices] ICommandPublisher publisher,
+            [FromBody] string secretValue) =>
         {
             await publisher.Publish(
                 new CreateSecret(
-                Guid.NewGuid().ToString(),
-                Guid.NewGuid().ToString(),
-                "secret example"));
+                    Guid.NewGuid().ToString(),
+                    Guid.NewGuid().ToString(),
+                    secretValue));
+        });
+
+        app.MapGet("/secrets/{id}", async (
+            [FromServices] SecretDbContext db,
+            [FromRoute] string id) =>
+        {
+            var secret = await db.Secrets.FindAsync(id);
+            return secret is not null ? Results.Ok(secret) : Results.NotFound();
         });
 
         app.MapGet("/secrets/all", async ([FromServices] SecretDbContext db) =>
