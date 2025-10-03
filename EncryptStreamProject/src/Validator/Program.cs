@@ -10,7 +10,7 @@ var configuration = builder.Configuration;
 
 builder.AddServiceDefaults();
 
-builder.Services.AddMessageBus(configuration);
+builder.AddMessageBus(configuration);
 builder.Services.ConfigureDomainServices();
 builder.AddDatabase(configuration);
 

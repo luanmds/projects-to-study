@@ -2,36 +2,22 @@ using System.Diagnostics.CodeAnalysis;
 using Application.Publishers;
 using Confluent.Kafka;
 using Infrastructure.MessageBus.Model;
-using Infrastructure.MessageBus.Serializers;
 using Microsoft.Extensions.Logging;
 using INotificationPublisher = Application.Publishers.INotificationPublisher;
 
 namespace Infrastructure.MessageBus;
 
 [ExcludeFromCodeCoverage]
-public class MessagePublisher : IEventPublisher, INotificationPublisher
+public class MessagePublisher(
+    IProducer<string, Message> producer,
+    MessageBusSettings settings,
+    ILogger<MessagePublisher> logger) : IEventPublisher, INotificationPublisher
 {
-    private readonly ILogger<MessagePublisher> _logger;
-    private readonly ProducerConfig _config;
-    private readonly List<MessageBusChannel> _channels;
-
-    public MessagePublisher(MessageBusSettings settings, ILogger<MessagePublisher> logger)
-    {
-        _logger = logger;      
-        _channels = settings.MessageBusChannels.Where(x => x.IsPublisher).ToList();
-
-        _config = new ProducerConfig
-        {
-            BootstrapServers = settings.BrokerServer
-        };
-    }
+    private readonly ILogger<MessagePublisher> _logger = logger;
+    private readonly List<MessageBusChannel> _channels = [.. settings.MessageBusChannels.Where(x => x.IsPublisher)];
 
     async Task IEventPublisher.Publish<T>(T @event, CancellationToken cancellationToken)
     {
-        using var producer = new ProducerBuilder<string, Message>(_config)
-            .SetValueSerializer(new MessageSerializer())
-            .Build();
-
         var data = MessageSubscriptionManager.ParseEventToMessage(@event);
         
         var message = new Message<string, Message> { Key = @event.Id, Value = data };
@@ -54,10 +40,6 @@ public class MessagePublisher : IEventPublisher, INotificationPublisher
 
     async Task INotificationPublisher.Publish<T>(T notification, CancellationToken cancellationToken)
     {
-        using var producer = new ProducerBuilder<string, Message>(_config)
-            .SetValueSerializer(new MessageSerializer())
-            .Build();
-
         var data = MessageSubscriptionManager.ParseEventToMessage(notification);
         
         var message = new Message<string, Message> { Key = notification.Id, Value = data };

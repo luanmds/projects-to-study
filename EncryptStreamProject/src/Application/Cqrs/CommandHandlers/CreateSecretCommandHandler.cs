@@ -1,7 +1,6 @@
 using Application.Cqrs.Commands;
 using Application.Events;
 using Application.Publishers;
-using Domain.Model;
 using Domain.Model.Enum;
 using Domain.Services;
 using MediatR;

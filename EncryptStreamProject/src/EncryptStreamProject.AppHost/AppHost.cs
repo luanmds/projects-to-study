@@ -3,7 +3,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 // Add Database Resource
 var postgres = builder.AddPostgres("postgres", port: 5432)
     .WithImage("postgres:latest")
-    .WithDataVolume("")
+    .WithDataVolume("postgres_data")
     .WithEnvironment("POSTGRES_USER", "postgres")
     .WithEnvironment("POSTGRES_DB", "encrypt_db");
 
@@ -29,19 +29,19 @@ builder.AddProject<Projects.Validator>("validator")
     .WithReference(kafka)
     .WithReference(postgresdb)
     .WaitFor(postgresdb)
-    .WaitFor(initKafka);
+    .WaitForCompletion(initKafka);
 
 builder.AddProject<Projects.Encryptor>("encryptor")
     .WithReference(postgresdb)
     .WaitFor(postgresdb)
     .WithReference(kafka)
-    .WaitFor(initKafka);
+    .WaitForCompletion(initKafka);
 
 builder.AddProject<Projects.WebApi>("api")
     .WithExternalHttpEndpoints()
     .WithReference(postgresdb)
     .WaitFor(postgresdb)
     .WithReference(kafka)
-    .WaitFor(initKafka);
+    .WaitForCompletion(initKafka);
 
 builder.Build().Run();

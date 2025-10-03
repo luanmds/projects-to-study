@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Application.Cqrs.Commands;
 using Application.Publishers;
 using Infrastructure.Configuration;
+using Infrastructure.MessageBus.Model;
 using Infrastructure.Settings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -31,7 +32,7 @@ appSettingsSection.Bind(appSettings);
 
 builder.AddDatabase(builder.Configuration);
 builder.Services.ConfigureDomainServices();
-builder.Services.AddMessageBus(builder.Configuration);    
+builder.AddMessageBus(builder.Configuration);
 
 var app = builder.Build();
 
