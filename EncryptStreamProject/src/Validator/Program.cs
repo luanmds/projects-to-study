@@ -1,17 +1,24 @@
 using Application.MessageHandlers;
 using Application.Notifications;
 using Infrastructure.Configuration;
+using Infrastructure.MessageBus;
 using Validator;
 
 var builder = Host.CreateApplicationBuilder(args);
 
 var configuration = builder.Configuration;
 
-builder.Services.AddMessageBus(configuration);
-builder.Services.ConfigureDomainServices();
-builder.Services.AddDatabase(configuration);
+builder.AddServiceDefaults();
 
-builder.Services.AddHostedService<ValidatorConsumer>();
+builder.AddMessageBus(configuration);
+builder.Services.ConfigureDomainServices();
+builder.AddDatabase(configuration);
+
+builder.AddConsumerKafka(
+    builder.Services.BuildServiceProvider().GetRequiredService<MessageBusSettings>(),
+    "kafka");
+
+builder.Services.AddHostedService<ValidatorWorker>();
 
 var host = builder.Build();
 

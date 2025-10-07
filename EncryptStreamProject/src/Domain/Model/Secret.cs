@@ -7,7 +7,7 @@ namespace Domain.Model;
 
 public class Secret : AggregateRoot<Secret>
 {
-    public string TextEncrypted { get; private set; }
+    public string TextEncrypted { get; private set; } = string.Empty;
     public SecretEncryptData SecretEncryptData { get; private set; }
     public DateTime CreatedAt { get; init; }
     public EncryptStatus EncryptStatus { get; private set; }

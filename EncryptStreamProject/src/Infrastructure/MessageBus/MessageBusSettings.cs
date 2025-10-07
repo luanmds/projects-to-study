@@ -6,7 +6,7 @@ namespace Infrastructure.MessageBus;
 [ExcludeFromCodeCoverage]
 public class MessageBusSettings
 {
-    public string BrokerServer { get; init; }
+    public string BrokerServer { get; init; } = string.Empty;
 
     public int SessionTimeout { get; set; } = 6000;
 

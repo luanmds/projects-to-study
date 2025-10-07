@@ -8,7 +8,7 @@ namespace Infrastructure.Settings;
 [ExcludeFromCodeCoverage]
 public class SecretDbContext : DbContext
 {
-    public SecretDbContext(){}
+    public SecretDbContext() { }
     public SecretDbContext(DbContextOptions<SecretDbContext> options) : base(options) { }
 
     public virtual DbSet<Secret> Secrets { get; init; }
@@ -19,8 +19,12 @@ public class SecretDbContext : DbContext
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Username=postgres;Password=admin");
-     
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseNpgsql("postgresdb");
+        }
+    }
 }
 
 [ExcludeFromCodeCoverage]

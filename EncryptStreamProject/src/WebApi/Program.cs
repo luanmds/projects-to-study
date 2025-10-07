@@ -2,11 +2,13 @@ using System.Diagnostics.CodeAnalysis;
 using Application.Cqrs.Commands;
 using Application.Publishers;
 using Infrastructure.Configuration;
+using Infrastructure.MessageBus.Model;
 using Infrastructure.Settings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using WebApi;
+using WebApi.Endpoints;
 
 [assembly: ExcludeFromCodeCoverage]
 
@@ -17,8 +19,8 @@ Log.Logger = new LoggerConfiguration()
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.AddServiceDefaults();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -28,13 +30,12 @@ var appSettings = new ApplicationSettings();
 var appSettingsSection = builder.Configuration.GetSection("ApplicationSettings");
 appSettingsSection.Bind(appSettings);
 
-builder.Services.AddDatabase(builder.Configuration);
+builder.AddDatabase(builder.Configuration);
 builder.Services.ConfigureDomainServices();
-builder.Services.AddMessageBus(builder.Configuration);    
+builder.AddMessageBus(builder.Configuration);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -43,7 +44,6 @@ if (app.Environment.IsDevelopment())
 
 if(appSettings.UseMigration)
 {
-    // Migrate tables
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<SecretDbContext>();
     await db.Database.MigrateAsync();
@@ -51,13 +51,7 @@ if(appSettings.UseMigration)
 
 app.UseHttpsRedirection();
 
-app.MapGet("", async ([FromServices] ICommandPublisher publisher) => {
-    await publisher.Publish(
-        new CreateSecret(
-        Guid.NewGuid().ToString(),
-        Guid.NewGuid().ToString(),
-        "secret example"));
-});
+app.MapApiEndpoints();
+app.MapDefaultEndpoints();
 
-Log.Information("API Running");
 await app.RunAsync();

@@ -2,14 +2,21 @@ using Application.Events;
 using Application.MessageHandlers;
 using Encryptor;
 using Infrastructure.Configuration;
+using Infrastructure.MessageBus;
 
 var builder = Host.CreateApplicationBuilder(args);
 
 var configuration = builder.Configuration;
 
-builder.Services.AddMessageBus(configuration);
+builder.AddServiceDefaults();
+
+builder.AddMessageBus(configuration);
 builder.Services.ConfigureDomainServices();
-builder.Services.AddDatabase(configuration);
+builder.AddDatabase(configuration);
+
+builder.AddConsumerKafka(
+    builder.Services.BuildServiceProvider().GetRequiredService<MessageBusSettings>(),
+    "kafka");
 
 builder.Services.AddHostedService<EncryptorWorker>();
 
