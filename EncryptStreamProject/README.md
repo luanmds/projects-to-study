@@ -1,88 +1,115 @@
+
 # Encrypt Stream Project
 
-Este projeto é um estudo prático de padrões de Arquitetura e Engenharia de Software, implementando uma solução distribuída com microserviços.
 
-## 🎯 Objetivo
+This project is a practical study of Software Architecture and Engineering patterns, implementing a distributed solution with microservices using .NET 9, Kafka, and PostgreSQL.
 
-Demonstrar a implementação e integração de diversos padrões arquiteturais e de design em um cenário real, utilizando mensageria com Kafka para comunicação entre serviços.
+## 🎯 Objective
 
-## 🏗️ Arquitetura
 
-O projeto é composto por três aplicações que se comunicam através de mensagens em um broker Kafka, implementando uma arquitetura orientada a eventos (Event-Driven Architecture).
+Demonstrates the implementation and integration of various architectural and design patterns in a real scenario, using Kafka messaging for communication between services. The project explores modern .NET practices, CQRS, DDD, and event-driven microservices.
 
-### Padrões Implementados
+## 🏗️ Architecture
 
-#### Padrões de Domínio
-- **Service Layer**: Camada de serviços para orquestração de operações de domínio
-- **Domain Model**: Modelagem rica de domínio com comportamentos e regras de negócio
 
-#### Padrões de Acesso a Dados
-- **Data Mapper**: Mapeamento entre objetos de domínio e banco de dados
-- **Repository**: Abstração para acesso a dados (DDD)
-- **Unit of Work**: Controle de transações e mudanças em objetos
+The solution is composed of three main services that communicate asynchronously via Kafka topics, implementing an Event-Driven Architecture:
 
-#### Padrões Estruturais
-- **Identity Field**: Identificação de entidades e agregados (DDD)
-- **Value Object**: Objetos imutáveis que representam conceitos do domínio
-- **DTO**: Objetos para transferência de dados entre camadas
+- **WebApi**: ASP.NET Core Minimal API – Entry point for creating secrets.
+- **Encryptor**: Background worker service – Encrypts secrets and publishes events.
+- **Validator**: Background worker service – Validates encrypted secrets.
 
-#### Padrões de Integração
-- **Gateway**: Abstração para serviços externos
-- **Mapper**: Conversão entre diferentes representações de dados
-- **Separated Interface**: Interfaces para desacoplamento entre camadas
+All services share a common domain, application, and infrastructure layer, following clean architecture principles.
 
-## 🚀 Como Executar
 
-### Pré-requisitos
+## 🧩 Implemented Patterns
 
-- [.NET Core SDK](https://dotnet.microsoft.com/download) (versão mais recente)
+
+### Domain Patterns
+- **Service Layer**: Orchestrates domain operations
+- **Domain Model**: Rich domain modeling with behaviors and business rules
+
+
+### Data Access Patterns
+- **Data Mapper**: Maps between domain objects and the database
+- **Repository**: Abstraction for data access (DDD)
+- **Unit of Work**: Transaction and change tracking for objects
+
+
+### Structural Patterns
+- **Identity Field**: Identification of entities and aggregates (DDD)
+- **Value Object**: Immutable objects representing domain concepts
+- **DTO**: Objects for data transfer between layers
+
+
+### Integration Patterns
+- **Gateway**: Abstraction for external services
+- **Mapper**: Conversion between different data representations
+- **Separated Interface**: Interfaces for decoupling between layers
+
+
+## 🚀 Getting Started
+
+
+### Prerequisites
+
+- [.NET 9.0 SDK](https://dotnet.microsoft.com/download)
 - [Docker](https://www.docker.com/get-started)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 
-### Configuração do Ambiente
 
-1. **Configurar o Kafka**
+### Environment Setup
+
+1. **Start Kafka**
    ```bash
    cd docker
    docker-compose -f docker-compose.kafka.yml up -d
    ```
-   Este comando iniciará a plataforma Kafka e criará os tópicos necessários.
+   This command starts the Kafka platform and creates the required topics.
 
-2. **Configurar Dependências**
+2. **Start Dependencies**
    ```bash
    docker-compose up -d
    ```
-   Este comando iniciará os demais serviços necessários definidos no docker-compose.yaml.
+   This command starts PostgreSQL and other required services defined in `docker-compose.yml`.
 
-### Executando o Projeto
 
-1. **Iniciar os Serviços**
+### Running the Project
+
+1. **Build the Solution**
    ```bash
-   # Em terminais separados, execute:
-   dotnet run --project ./Service1/Service1.csproj
-   dotnet run --project ./Service2/Service2.csproj
-   dotnet run --project ./Service3/Service3.csproj
+   dotnet build EncryptSecretProject.sln
    ```
 
-2. **Acessar a API**
-   - Abra o navegador em [http://localhost:5000/swagger](http://localhost:5000/swagger)
-   - Use a interface Swagger para testar os endpoints
+2. **Start the Services**
+   ```bash
+   # In separate terminals, run:
+   dotnet run --project ./src/WebApi/WebApi.csproj
+   dotnet run --project ./src/Encryptor/Encryptor.csproj
+   dotnet run --project ./src/Validator/Validator.csproj
+   ```
 
-3. **Monitorar a Execução**
-   - Acompanhe os logs no console para visualizar o fluxo de mensagens
-   - Verifique a integração entre os serviços através dos eventos no Kafka
+3. **Access the API**
+   - Open your browser at [http://localhost:5000/swagger](http://localhost:5000/swagger)
+   - Use the Swagger UI to test the endpoints
 
-## 📚 Documentação Adicional
+4. **Monitor Execution**
+   - Watch the logs in the console to see the message flow
+   - Check the integration between services through Kafka events
 
-Para mais detalhes sobre os padrões implementados e a arquitetura do projeto, consulte:
+
+## 📚 Additional Documentation
+
+For more details about the implemented patterns and project architecture, see:
 - [Domain-Driven Design](https://martinfowler.com/tags/domain%20driven%20design.html)
 - [Enterprise Integration Patterns](https://www.enterpriseintegrationpatterns.com/)
 - [Microservices Patterns](https://microservices.io/patterns/index.html)
 
-## 🤝 Contribuição
 
-Sinta-se à vontade para contribuir com melhorias, correções ou novos padrões de implementação. Abra uma issue ou envie um pull request.
+## 🤝 Contributing
 
-## 📝 Licença
+Contributions are welcome! Feel free to submit improvements, bug fixes, or new pattern implementations. Open an issue or pull request.
 
-Este projeto é destinado apenas para fins de estudo e demonstração.
+
+## 📝 License
+
+This project is intended for study and demonstration purposes only.
