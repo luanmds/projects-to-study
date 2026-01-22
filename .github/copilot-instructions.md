@@ -42,7 +42,7 @@ Requires Docker for Kafka infrastructure. See the project's [README.md](../Encry
 
 ## Guidelines using .Net/C#
 
-- Follow the guidelines in [.github/dotnet-guidelines.copilot.md](dotnet-guidelines.copilot.md) for writing .Net/C# code.
+- Follow the guidelines in `.github/instructions/dotnet-guidelines.instructions.md` for writing .Net/C# code.
 - Use .NET 9.0 features and modern C# patterns (records, pattern matching, init-only properties)
 - Implement CQRS pattern using MediatR for commands, queries, and events
 - Use Repository pattern with Unit of Work for data access
@@ -51,4 +51,4 @@ Requires Docker for Kafka infrastructure. See the project's [README.md](../Encry
 - Implement proper error handling with custom domain exceptions
 - Use structured logging with Serilog
 - Enable nullable reference types in all projects
-- Write unit tests using xUnit with AAA pattern
+- Write unit tests using xUnit with AAA pattern and follow the instructions in `.github/instructions/unit-tests-guidelines.instructions.md`
